@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyBookApi.Data;
+using MyBookApi.Identity;
 using MyBookApi.Repository;
 
 namespace MyBookApi
@@ -25,6 +27,7 @@ namespace MyBookApi
                 options => options.UseSqlServer(Configuration.GetConnectionString("BookStoreDB")));
             services.AddControllers();
            services.AddTransient<IBookRepository,BookRepository>();
+            services.AddTransient<IAccountRepository, AccountRepository>();
             services.AddAutoMapper(typeof(Startup));
             services.AddCors(options =>
             {
@@ -33,6 +36,9 @@ namespace MyBookApi
                     builder.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader();
                 });
             });
+            services.AddIdentity<ApplicationUser, IdentityRole>().
+                AddEntityFrameworkStores<BookContext>()
+                .AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
